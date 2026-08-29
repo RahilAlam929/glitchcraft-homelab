@@ -1,4 +1,4 @@
-# 🚀 GlitchCraft Homelab
+#  GlitchCraft Homelab
 
 My first hands-on practice project for learning **self-hosting, Docker, Nginx, reverse proxies, networking, and server infrastructure**.
 
@@ -6,7 +6,7 @@ This project is built locally on my Apple Silicon Mac as a learning environment.
 
 ---
 
-## 🎯 Project Goals
+##  Project Goals
 
 - Learn how web servers work
 - Understand Docker and containers
@@ -21,7 +21,7 @@ This project is built locally on my Apple Silicon Mac as a learning environment.
 
 ---
 
-## 🛠️ Current Tech Stack
+##  Current Tech Stack
 
 - macOS
 - Docker
@@ -33,7 +33,7 @@ This project is built locally on my Apple Silicon Mac as a learning environment.
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```text
                          Browser
