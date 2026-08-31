@@ -34,9 +34,7 @@ This project is built locally on my Apple Silicon Mac as a learning environment.
 ---
 
 ##  Architecture
-
-```text
-                         Browser
+                  Browser
                             │
                             ▼
                     ┌───────────────┐
@@ -54,9 +52,7 @@ This project is built locally on my Apple Silicon Mac as a learning environment.
              │   :3000  │      │   :3001  │
              └──────────┘      └──────────┘
 
-## 🏗️ Architecture
-
-```text
+Request Flow
                     Browser
                        │
                        ▼
