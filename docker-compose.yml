@@ -1,5 +1,6 @@
 services:
   app:
+    restart: unless-stopped
     image: node:alpine
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
@@ -16,6 +17,7 @@ services:
       - "3000:3000"
 
   app2:
+    restart: unless-stopped
     image: node:alpine
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001"]
@@ -32,9 +34,10 @@ services:
       - "3001:3001"
 
   nginx:
+    restart: unless-stopped
     image: nginx:alpine
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost"]
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:80"]
       interval: 10s
       timeout: 5s
       retries: 3
