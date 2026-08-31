@@ -53,3 +53,52 @@ This project is built locally on my Apple Silicon Mac as a learning environment.
              │  Node.js │      │  Node.js │
              │   :3000  │      │   :3001  │
              └──────────┘      └──────────┘
+
+## 🏗️ Architecture
+
+```text
+                    Browser
+                       │
+                       ▼
+              ┌─────────────────┐
+              │      Nginx      │
+              │ Reverse Proxy   │
+              │     :8080       │
+              └────────┬────────┘
+                       │
+              ┌────────┴────────┐
+              ▼                 ▼
+        ┌───────────┐     ┌───────────┐
+        │ Rahil App │     │ Rahil App2│
+        │   :3000   │     │   :3001   │
+        └───────────┘     └───────────┘
+
+              Infrastructure
+              ┌────────┴────────┐
+              ▼                 ▼
+       ┌──────────────┐   ┌──────────────┐
+       │ PostgreSQL   │   │    Redis     │
+       │    :5432     │   │    :6379     │
+       └──────────────┘   └──────────────┘
+Client
+  │
+  ▼
+Nginx :8080
+  │
+  ├── /app1/ ──► Rahil App :3000
+  │
+  └── /app2/ ──► Rahil App2 :3001
+| Service       | Technology    | Port | Purpose                  |
+| ------------- | ------------- | ---: | ------------------------ |
+| Reverse Proxy | Nginx         | 8080 | Routes incoming requests |
+| App 1         | Node.js       | 3000 | First application        |
+| App 2         | Node.js       | 3001 | Second application       |
+| Database      | PostgreSQL 16 | 5432 | Data storage             |
+| Cache         | Redis 7       | 6379 | In-memory cache          |
+
+Reliability
+Docker Compose manages the services
+Health checks verify service availability
+PostgreSQL uses pg_isready
+Redis connectivity uses redis-cli ping
+Nginx routes traffic between applications
