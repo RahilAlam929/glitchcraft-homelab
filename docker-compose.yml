@@ -1,6 +1,12 @@
 services:
   app:
     image: node:alpine
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     container_name: rahil-app
     working_dir: /app
     volumes:
@@ -11,6 +17,12 @@ services:
 
   app2:
     image: node:alpine
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     container_name: rahil-app2
     working_dir: /app
     volumes:
@@ -21,6 +33,12 @@ services:
 
   nginx:
     image: nginx:alpine
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     container_name: homelab-nginx
     ports:
       - "8080:80"
