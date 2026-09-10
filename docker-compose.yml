@@ -2,46 +2,40 @@ services:
   app:
     restart: unless-stopped
     image: node:alpine
+    container_name: rahil-app
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    command: node server.js
+    expose:
+      - "3000"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
-    container_name: rahil-app
-    working_dir: /app
-    volumes:
-      - ./app:/app
-    command: node server.js
-    ports:
-      - "3000:3000"
 
   app2:
     restart: unless-stopped
     image: node:alpine
+    container_name: rahil-app2
+    working_dir: /app
+    volumes:
+      - ./app2:/app
+    command: node server.js
+    expose:
+      - "3001"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
-    container_name: rahil-app2
-    working_dir: /app
-    volumes:
-      - ./app2:/app
-    command: node server.js
-    ports:
-      - "3001:3001"
 
   nginx:
     restart: unless-stopped
     image: nginx:alpine
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:80"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
     container_name: homelab-nginx
     ports:
       - "8080:80"
@@ -50,3 +44,46 @@ services:
     depends_on:
       - app
       - app2
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:80"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  postgres:
+    restart: unless-stopped
+    image: postgres:16-alpine
+    container_name: homelab-postgres
+    environment:
+      POSTGRES_DB: homelab
+      POSTGRES_USER: homelab
+      POSTGRES_PASSWORD: homelabpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U homelab -d homelab"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    restart: unless-stopped
+    image: redis:7-alpine
+    container_name: homelab-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
