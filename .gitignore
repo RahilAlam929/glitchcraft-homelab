@@ -4,3 +4,8 @@
 !.env.example
 node_modules/
 *.log
+
+# Local backup files
+docker-compose.yml.backup*
+docker-compose.yml.broken-*
+docker-compose.yml.phase6-*
