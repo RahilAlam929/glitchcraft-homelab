@@ -1,6 +1,13 @@
 services:
   app:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.50
     image: node:alpine
     container_name: rahil-app
     working_dir: /app
@@ -17,7 +24,14 @@ services:
       start_period: 5s
 
   app2:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.50
     image: node:alpine
     container_name: rahil-app2
     working_dir: /app
@@ -34,7 +48,14 @@ services:
       start_period: 5s
 
   nginx:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
     image: nginx:alpine
     container_name: homelab-nginx
     ports:
@@ -52,7 +73,14 @@ services:
       start_period: 5s
 
   postgres:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.00
     image: postgres:16-alpine
     container_name: homelab-postgres
     environment:
@@ -61,8 +89,6 @@ services:
       POSTGRES_PASSWORD: homelabpass
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U homelab -d homelab"]
       interval: 10s
@@ -70,20 +96,71 @@ services:
       retries: 5
 
   redis:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.50
     image: redis:7-alpine
     container_name: homelab-redis
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  prometheus:
+    restart: unless-stopped
+    image: prom/prometheus:latest
+    container_name: homelab-prometheus
+    mem_limit: 256m
+    cpus: 0.50
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    expose:
+      - "9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    depends_on:
+      - cadvisor
+
+  cadvisor:
+    restart: unless-stopped
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: homelab-cadvisor
+    mem_limit: 256m
+    cpus: 0.50
+    expose:
+      - "8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+
+  grafana:
+    restart: unless-stopped
+    image: grafana/grafana:latest
+    container_name: homelab-grafana
+    mem_limit: 256m
+    cpus: 0.50
+    ports:
+      - "3002:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
   redis_data:
+  prometheus_data:
+  grafana_data:
